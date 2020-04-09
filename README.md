@@ -19,14 +19,17 @@ applied-science/darkstar {:git/url "https://github.com/appliedsciencestudio/dark
 ## Usage
 
 ``` clojure
+(ns test
+  (:require [appliedsciencestudio.darkstar :as darkstar]))
+
 ;; write an SVG from a Vega spec
 (->> (slurp "vega-example.json")
-     vega-spec->svg
+     darkstar/vega-spec->svg
      (spit "vg-example.svg"))
 
 ;; write an SVG from a Vega-lite spec
 (->> (slurp "vega-lite-example.json")
-     vega-lite-spec->svg
+     darkstar/vega-lite-spec->svg
      (spit "vl-example.svg"))
 ```
 
