@@ -4,8 +4,8 @@
   (let [engine (.getEngineByName (javax.script.ScriptEngineManager.) "graal.js")
         bindings (.getBindings engine javax.script.ScriptContext/ENGINE_SCOPE)]
     (.put bindings "polyglot.js.allowAllAccess" true)
-    (.eval engine (java.io.FileReader. "resources/vega.js"))
-    (.eval engine (java.io.FileReader. "resources/vega-lite.js"))
+    (.eval engine (slurp (clojure.java.io/resource "vega.js")))
+    (.eval engine (slurp (clojure.java.io/resource "vega-lite.js")))
     engine))
 
 (defn make-js-fn [js-text]
