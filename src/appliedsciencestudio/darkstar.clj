@@ -9,7 +9,7 @@
     engine))
 
 (defn make-js-fn [js-text]
-  (let [f (.eval engine js-text)]
+  (let [^java.util.function.Function f (.eval engine js-text)]
     (fn [& args] (.apply f (to-array args)))))
 
 (def vega-lite->vega
