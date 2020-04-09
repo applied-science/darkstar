@@ -13,7 +13,7 @@ We have not yet released to Clojars, so we recommended you use deps.edn:
 
 ``` clojure
 applied-science/darkstar {:git/url "https://github.com/appliedsciencestudio/darkstar/"
-                          :sha "FIXME"}
+                          :sha "c24cd6eaca5310027da803a8e0ec72f134bb2240"}
 ```
 
 ## Usage
