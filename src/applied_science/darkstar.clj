@@ -1,4 +1,4 @@
-(ns appliedsciencestudio.darkstar)
+(ns applied-science.darkstar)
 
 (def engine
   (let [engine (.getEngineByName (javax.script.ScriptEngineManager.) "graal.js")

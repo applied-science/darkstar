@@ -4,8 +4,8 @@ Darkstar packages Vega `5.10.1` and Vega-lite `4.10.1` as a single
 dependency Clojure library with a very small API surface.
 
 This was made relatively easy by the GraalJS Javascript runtime, which
-should work on any stock JVM >= `1.8.0_131` (the version upon which I
-have been testing it).
+should work on any stock JVM >= `1.8.0_131`. I have tested it on that
+version of HotSpot, as well as OpenJDK 11 and 13.
 
 ## Installation
 
@@ -13,14 +13,14 @@ We have not yet released to Clojars, so we recommended you use deps.edn:
 
 ``` clojure
 applied-science/darkstar {:git/url "https://github.com/appliedsciencestudio/darkstar/"
-                          :sha "bb2c880472ab66d8e463f9609faaa97e08edbf37"}
+                          :sha ""}
 ```
 
 ## Usage
 
 ``` clojure
 (ns test
-  (:require [appliedsciencestudio.darkstar :as darkstar]))
+  (:require [applied-science.darkstar :as darkstar]))
 
 ;; write an SVG from a Vega spec
 (->> (slurp "vega-example.json")
