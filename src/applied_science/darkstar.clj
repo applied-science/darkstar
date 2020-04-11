@@ -4,9 +4,25 @@
   (let [engine (.getEngineByName (javax.script.ScriptEngineManager.) "graal.js")
         bindings (.getBindings engine javax.script.ScriptContext/ENGINE_SCOPE)]
     (.put bindings "polyglot.js.allowAllAccess" true)
-    (.eval engine (slurp (clojure.java.io/resource "vega.js")))
-    (.eval engine (slurp (clojure.java.io/resource "vega-lite.js")))
-    engine))
+    (doto engine
+      ;; XXX minimal polyfill for part of the fetch and fs APIs, brittle af
+      (.eval "
+async function fetch(path, options) {
+  print(Object.keys(options));
+  var body = Java.type('clojure.core$slurp').invokeStatic(path,null);
+  return {'ok' : true,
+          'body' : body,
+          'text' : (function() {return body;}),
+          'json' : (function() {return JSON.parse(body);})};
+}
+function readFile(path, callback) {
+  var data = Java.type('clojure.core$slurp').invokeStatic(path,null);
+  callback(null, data);
+}
+var fs = {'readFile':readFile};
+")
+      (.eval (slurp (clojure.java.io/resource "vega.js")))
+      (.eval (slurp (clojure.java.io/resource "vega-lite.js"))))))
 
 (defn make-js-fn [js-text]
   (let [^java.util.function.Function f (.eval engine js-text)]
@@ -40,9 +56,17 @@
   (vega-spec->svg (vega-lite->vega vega-lite-spec-json-string)))
 
 (comment
-  
-  (->> (slurp "vega-lite-example.json")
-       vega-lite-spec->svg
-       (spit "vl-example.svg"))  
 
+  (->> (slurp "vega-lite-movies.json")
+       vega-lite-spec->svg
+       (spit "vl-movies.svg"))
   )
+
+;; Polyglot.export(key, value)
+;; Polyglot.import(key, value)
+;; Polyglot.eval(languageId, sourceCode)
+;; Polyglot.evalFile(languageId, sourceFileName)
+
+;;(System/getProperties)
+;;  System.setProperty("polyglot.js.ecmascript-version", "2020");
+;;js.syntax-extensions

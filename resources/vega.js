@@ -3398,8 +3398,9 @@
   }
 
   var loader = loaderFactory(
-    typeof fetch !== 'undefined' && fetch, // use built-in fetch API
-    null // no file system access
+      typeof fetch !== 'undefined' && fetch, // use built-in fetch API
+//      null // no file system access
+      typeof fs !== 'undefined' && fs // XXX -jar    
   );
 
   const parse$1 = read;
