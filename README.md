@@ -12,7 +12,7 @@ version of HotSpot, as well as OpenJDK 11 and 13.
 We have not yet released to Clojars, so we recommended you use deps.edn:
 
 ``` clojure
-applied-science/darkstar {:git/url "https://github.com/appliedsciencestudio/darkstar/"
+applied-science/darkstar {:git/url "https://github.com/applied-science/darkstar/"
                           :sha "541a3ff36065c59e92fe6aa61e41a4385ba6f893"}
 ```
 
