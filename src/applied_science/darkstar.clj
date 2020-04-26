@@ -1,5 +1,15 @@
 (ns applied-science.darkstar)
 
+(def ^:dynamic *base-directory* nil)
+
+(defn read-file
+  "A very, very slight polyfill for Node's fs.readFile that uses `*base-directory*` as Vega's idea of current working directory."
+  [filename]
+  ;; TODO only system error handling!
+  (let [path (.getAbsolutePath (java.io.File. (str *base-directory* filename)))]
+    (println path)
+    (slurp path)))
+
 (def engine
   (let [engine (.getEngineByName (javax.script.ScriptEngineManager.) "graal.js")
         bindings (.getBindings engine javax.script.ScriptContext/ENGINE_SCOPE)]
@@ -8,7 +18,6 @@
       ;; XXX minimal polyfill for part of the fetch and fs APIs, brittle af
       (.eval "
 async function fetch(path, options) {
-  print(Object.keys(options));
   var body = Java.type('clojure.core$slurp').invokeStatic(path,null);
   return {'ok' : true,
           'body' : body,
@@ -16,8 +25,12 @@ async function fetch(path, options) {
           'json' : (function() {return JSON.parse(body);})};
 }
 function readFile(path, callback) {
-  var data = Java.type('clojure.core$slurp').invokeStatic(path,null);
-  callback(null, data);
+  try {
+    var data = Java.type('applied_science.darkstar$read_file').invokeStatic(path);
+    callback(null, data);
+  } catch (err) {
+    printErr(err);
+  }
 }
 var fs = {'readFile':readFile};
 ")
@@ -29,12 +42,15 @@ var fs = {'readFile':readFile};
     (fn [& args] (.apply f (to-array args)))))
 
 (def vega-lite->vega
+  "Converts a VegaLite spec into a Vega spec."
   (make-js-fn "function(vlSpec) { return JSON.stringify(vegaLite.compile(JSON.parse(vlSpec)).spec);}"))
 
 (def vega-spec->view
+  "Converts a Vega spec into a Vega view object, finalizing all resources."
   (make-js-fn "function(spec) { return new vega.View(vega.parse(JSON.parse(spec)), {renderer:'svg'}).finalize();}"))
 
 (def view->svg
+  "Converts a Vega view object into an SVG."
   (make-js-fn "function (view) {
     var promise = Java.type('clojure.core$promise').invokeStatic();
     view.toSVG(1.0).then(function(svg) {
@@ -59,7 +75,8 @@ var fs = {'readFile':readFile};
 
   (->> (slurp "vega-lite-movies.json")
        vega-lite-spec->svg
-       (spit "vl-movies.svg"))
+       ;;(spit "vl-movies.svg")
+       )
   )
 
 ;; Polyglot.export(key, value)
