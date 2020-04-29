@@ -6,9 +6,7 @@
   "A very, very slight polyfill for Node's fs.readFile that uses `*base-directory*` as Vega's idea of current working directory."
   [filename]
   ;; TODO only system error handling!
-  (let [path (.getAbsolutePath (java.io.File. (str *base-directory* filename)))]
-    (println path)
-    (slurp path)))
+  (slurp (.getAbsolutePath (java.io.File. (str *base-directory* filename)))))
 
 (def engine
   (let [engine (.getEngineByName (javax.script.ScriptEngineManager.) "graal.js")
@@ -75,15 +73,6 @@ var fs = {'readFile':readFile};
 
   (->> (slurp "vega-lite-movies.json")
        vega-lite-spec->svg
-       ;;(spit "vl-movies.svg")
-       )
+       (spit "vl-movies.svg"))
+  
   )
-
-;; Polyglot.export(key, value)
-;; Polyglot.import(key, value)
-;; Polyglot.eval(languageId, sourceCode)
-;; Polyglot.evalFile(languageId, sourceFileName)
-
-;;(System/getProperties)
-;;  System.setProperty("polyglot.js.ecmascript-version", "2020");
-;;js.syntax-extensions
